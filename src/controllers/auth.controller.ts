@@ -217,7 +217,12 @@ export const loginUser = asyncHandler(async (req, res) => {
     new ApiResponse(
       200,
       {
-        user: { id: existingUser.id, name: existingUser.name, email: existingUser.email, role: existingUser.role },
+        user: {
+          id: existingUser.id,
+          name: existingUser.name,
+          email: existingUser.email,
+          role: existingUser.role,
+        },
       },
       'Logged in successfully'
     )
@@ -244,15 +249,16 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Not authenticated');
   }
 
-  res.status(200).json(
-    new ApiResponse(
-      200,
-      { user: { id: user.id, name: user.name, email: user.email, role: user.role } },
-      'User fetched successfully'
-    )
-  );
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { user: { id: user.id, name: user.name, email: user.email, role: user.role } },
+        'User fetched successfully'
+      )
+    );
 });
-
 
 /* =========================
    GET SIGN URL FOR UPLOAD
@@ -260,19 +266,19 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 
 export const getSignUrlImageKit = asyncHandler(async (req, res) => {
   // 🔒 Authorization check
-  if (!req.user || req.user.role !== "admin") {
-    throw new ApiError(403, "Forbidden: Admin access required");
+  if (!req.user || req.user.role !== 'admin') {
+    throw new ApiError(403, 'Forbidden: Admin access required');
   }
 
   // 📦 Optional: how many uploads client wants
   const count = Number(req.query.count) || 1;
 
   if (count > 10) {
-    throw new ApiError(400, "You can request max 10 upload tokens at once");
+    throw new ApiError(400, 'You can request max 10 upload tokens at once');
   }
 
   // ⚡ Generate tokens
   const authParams = generateImageKitSignUrl(count);
 
-  res.status(200).json(new ApiResponse(200, authParams, "Upload auth parameters generated"));
+  res.status(200).json(new ApiResponse(200, authParams, 'Upload auth parameters generated'));
 });

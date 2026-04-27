@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import cors from "cors"
+import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRouter from '@routes/auth.routes';
 import brandRouter from '@routes/brand.routes';

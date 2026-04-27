@@ -1,4 +1,11 @@
-import { loginUser, signupUser, verifyOtp, logoutUser, getCurrentUser, getSignUrlImageKit } from '@/controllers/auth.controller';
+import {
+  loginUser,
+  signupUser,
+  verifyOtp,
+  logoutUser,
+  getCurrentUser,
+  getSignUrlImageKit,
+} from '@/controllers/auth.controller';
 import validateUser from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 

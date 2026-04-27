@@ -24,7 +24,7 @@ const validateUser = async (req: Request, res: Response, next: NextFunction) => 
     const secret = process.env.ACCESS_TOKEN_SECRET || 'access_secret';
 
     const decoded = jwt.verify(token, secret);
-    
+
     if (!decoded || typeof decoded !== 'object') {
       throw new ApiError(401, 'Unauthorized: Invalid token payload');
     }
@@ -35,11 +35,7 @@ const validateUser = async (req: Request, res: Response, next: NextFunction) => 
       throw new ApiError(401, 'Unauthorized: User ID not found in token');
     }
 
-    const [user] = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, userId))
-      .limit(1);
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
 
     if (!user) {
       throw new ApiError(401, 'Unauthorized: User not found');

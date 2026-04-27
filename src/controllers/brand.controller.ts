@@ -19,11 +19,7 @@ export const getAllBrands = asyncHandler(async (_req, res) => {
 export const getBrandById = asyncHandler(async (req, res) => {
   const id = req.params.id as string;
 
-  const [brand] = await db
-    .select()
-    .from(brandsTable)
-    .where(eq(brandsTable.id, id))
-    .limit(1);
+  const [brand] = await db.select().from(brandsTable).where(eq(brandsTable.id, id)).limit(1);
 
   if (!brand) {
     throw new ApiError(404, 'Brand not found');
