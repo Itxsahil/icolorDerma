@@ -10,6 +10,7 @@ import db from '@/db';
 import { usersTable } from '@/db/schemas/users';
 import { eq } from 'drizzle-orm';
 import { generateImageKitSignUrl } from '@/utils/generateSignUrl';
+import jwt from 'jsonwebtoken';
 /* =========================
    SIGN UP
 ========================= */
@@ -281,4 +282,73 @@ export const getSignUrlImageKit = asyncHandler(async (req, res) => {
   const authParams = generateImageKitSignUrl(count);
 
   res.status(200).json(new ApiResponse(200, authParams, 'Upload auth parameters generated'));
+});
+
+
+/* =========================
+   REFRESH ACCESS TOKEN
+========================= */
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken = req.cookies.refresh_token || req.body.refresh_token;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+
+  try {
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET!
+    ) as jwt.JwtPayload & { id: string; email: string; role: string };
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, decodedToken.id))
+      .limit(1);
+
+    if (!user) {
+      throw new ApiError(401, "Invalid refresh token");
+    }
+
+    if (incomingRefreshToken !== user.refresh_token) {
+      throw new ApiError(401, "Refresh token is expired or used");
+    }
+
+    const { access_token, refresh_token } = generateTokens({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    await db
+      .update(usersTable)
+      .set({ access_token, refresh_token })
+      .where(eq(usersTable.id, user.id));
+
+    // Set HttpOnly cookies
+    res.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        { access_token, refresh_token },
+        "Access token refreshed"
+      )
+    );
+  } catch (error) {
+    throw new ApiError(401, (error as Error)?.message || "Invalid refresh token");
+  }
 });

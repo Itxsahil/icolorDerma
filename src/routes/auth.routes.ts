@@ -5,6 +5,7 @@ import {
   logoutUser,
   getCurrentUser,
   getSignUrlImageKit,
+  refreshAccessToken,
 } from '@/controllers/auth.controller';
 import validateUser from '@/middlewares/auth.middleware';
 import { Router } from 'express';
@@ -15,6 +16,7 @@ router.post('/signup', signupUser);
 router.post('/verify-otp', verifyOtp);
 router.post('/login', loginUser);
 router.post('/logout', logoutUser);
+router.post('/refresh-token', refreshAccessToken);
 router.get('/me', validateUser, getCurrentUser);
 router.get('/imagekit-sign', validateUser, getSignUrlImageKit);
 
