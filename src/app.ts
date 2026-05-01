@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRouter from '@routes/auth.routes';
 import brandRouter from '@routes/brand.routes';
+import categoriesRouter from '@routes/categories.routes';
 import { ApiError } from '@/utils/ApiError';
 
 const app = express();
@@ -11,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'http://localhost:3000', // your frontend URL
+    origin: ['http://localhost:3000','http://localhost:3001'], // your frontend URL
     credentials: true, // Allow cookies to be sent
   })
 );
@@ -22,6 +23,7 @@ app.get('/', (_req, res) => {
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/brands', brandRouter);
+app.use('/api/v1/categories', categoriesRouter);
 
 // Global error handler
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
