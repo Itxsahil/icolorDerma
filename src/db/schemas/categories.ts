@@ -11,7 +11,9 @@ export const categoriesTable = pgTable(
     description: text('description'),
     imageUrl: text('image_url'),
 
-    parentId: uuid('parent_id'), // 👈 self reference
+    parentId: uuid('parent_id').references((): any => categoriesTable.id, {
+      onDelete: 'cascade'
+    }),
 
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
