@@ -379,23 +379,23 @@ export const deleteCategory = asyncHandler(async (req, res) => {
   }
 
   // If force delete, recursively delete all child categories
-  if (force === 'true' && childCategories.length > 0) {
-    const deleteChildrenRecursively = async (parentId: string) => {
-      const children = await db
-        .select()
-        .from(categoriesTable)
-        .where(eq(categoriesTable.parentId, parentId));
+  // if (force === 'true' && childCategories.length > 0) {
+  //   const deleteChildrenRecursively = async (parentId: string) => {
+  //     const children = await db
+  //       .select()
+  //       .from(categoriesTable)
+  //       .where(eq(categoriesTable.parentId, parentId));
 
-      for (const child of children) {
-        await deleteChildrenRecursively(child.id);
-        await db
-          .delete(categoriesTable)
-          .where(eq(categoriesTable.id, child.id));
-      }
-    };
+  //     for (const child of children) {
+  //       await deleteChildrenRecursively(child.id);
+  //       await db
+  //         .delete(categoriesTable)
+  //         .where(eq(categoriesTable.id, child.id));
+  //     }
+  //   };
 
-    await deleteChildrenRecursively(id);
-  }
+  //   await deleteChildrenRecursively(id);
+  // }
 
   // Delete the category
   await db
