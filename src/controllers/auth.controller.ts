@@ -284,7 +284,6 @@ export const getSignUrlImageKit = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, authParams, 'Upload auth parameters generated'));
 });
 
-
 /* =========================
    REFRESH ACCESS TOKEN
 ========================= */
@@ -292,7 +291,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies.refresh_token || req.body.refresh_token;
 
   if (!incomingRefreshToken) {
-    throw new ApiError(401, "Unauthorized request");
+    throw new ApiError(401, 'Unauthorized request');
   }
 
   try {
@@ -308,11 +307,11 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
       .limit(1);
 
     if (!user) {
-      throw new ApiError(401, "Invalid refresh token");
+      throw new ApiError(401, 'Invalid refresh token');
     }
 
     if (incomingRefreshToken !== user.refresh_token) {
-      throw new ApiError(401, "Refresh token is expired or used");
+      throw new ApiError(401, 'Refresh token is expired or used');
     }
 
     const { access_token, refresh_token } = generateTokens({
@@ -341,14 +340,10 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(200).json(
-      new ApiResponse(
-        200,
-        { access_token, refresh_token },
-        "Access token refreshed"
-      )
-    );
+    res
+      .status(200)
+      .json(new ApiResponse(200, { access_token, refresh_token }, 'Access token refreshed'));
   } catch (error) {
-    throw new ApiError(401, (error as Error)?.message || "Invalid refresh token");
+    throw new ApiError(401, (error as Error)?.message || 'Invalid refresh token');
   }
 });

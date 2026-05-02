@@ -12,7 +12,7 @@ export const categoriesTable = pgTable(
     imageUrl: text('image_url'),
 
     parentId: uuid('parent_id').references((): any => categoriesTable.id, {
-      onDelete: 'cascade'
+      onDelete: 'cascade',
     }),
 
     createdAt: timestamp('created_at').defaultNow().notNull(),

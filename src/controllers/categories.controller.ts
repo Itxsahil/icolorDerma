@@ -58,10 +58,10 @@ const validateCategoryData = (data: any) => {
 // Build category tree from flat array
 const buildCategoryTree = (categories: any[], parentId: string | null = null): any[] => {
   return categories
-    .filter(category => category.parentId === parentId)
-    .map(category => ({
+    .filter((category) => category.parentId === parentId)
+    .map((category) => ({
       ...category,
-      children: buildCategoryTree(categories, category.id)
+      children: buildCategoryTree(categories, category.id),
     }));
 };
 
@@ -86,10 +86,7 @@ export const getAllCategories = asyncHandler(async (req, res) => {
   if (search && typeof search === 'string') {
     const searchTerm = `%${search.trim()}%`;
     whereConditions.push(
-      or(
-        like(categoriesTable.name, searchTerm),
-        like(categoriesTable.description, searchTerm)
-      )
+      or(like(categoriesTable.name, searchTerm), like(categoriesTable.description, searchTerm))
     );
   }
 
@@ -107,9 +104,7 @@ export const getAllCategories = asyncHandler(async (req, res) => {
   // Return flat array or tree structure
   const result = flat === 'true' ? categories : buildCategoryTree(categories);
 
-  res.status(200).json(
-    new ApiResponse(200, result, 'Categories retrieved successfully')
-  );
+  res.status(200).json(new ApiResponse(200, result, 'Categories retrieved successfully'));
 });
 
 /* =========================
@@ -145,9 +140,7 @@ export const getCategoryById = asyncHandler(async (req, res) => {
     result = { ...category, children };
   }
 
-  res.status(200).json(
-    new ApiResponse(200, result, 'Category retrieved successfully')
-  );
+  res.status(200).json(new ApiResponse(200, result, 'Category retrieved successfully'));
 });
 
 /* =========================
@@ -183,9 +176,7 @@ export const getCategoryBySlug = asyncHandler(async (req, res) => {
     result = { ...category, children };
   }
 
-  res.status(200).json(
-    new ApiResponse(200, result, 'Category retrieved successfully')
-  );
+  res.status(200).json(new ApiResponse(200, result, 'Category retrieved successfully'));
 });
 
 /* =========================
@@ -214,7 +205,7 @@ export const createCategory = asyncHandler(async (req, res) => {
       .limit(1);
 
     if (!existingCategory) break;
-    
+
     slug = `${baseSlug}-${counter}`;
     counter++;
   }
@@ -244,9 +235,7 @@ export const createCategory = asyncHandler(async (req, res) => {
     })
     .returning();
 
-  res.status(201).json(
-    new ApiResponse(201, newCategory, 'Category created successfully')
-  );
+  res.status(201).json(new ApiResponse(201, newCategory, 'Category created successfully'));
 });
 
 /* =========================
@@ -297,7 +286,10 @@ export const updateCategory = asyncHandler(async (req, res) => {
 
     // Simple circular reference check (could be enhanced for deeper nesting)
     if (parentCategory.parentId === id) {
-      throw new ApiError(400, 'Circular reference detected: Parent category cannot be a child of this category');
+      throw new ApiError(
+        400,
+        'Circular reference detected: Parent category cannot be a child of this category'
+      );
     }
   }
 
@@ -317,7 +309,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
         .limit(1);
 
       if (!existingSlugCategory || existingSlugCategory.id === id) break;
-      
+
       slug = `${baseSlug}-${counter}`;
       counter++;
     }
@@ -336,9 +328,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
     .where(eq(categoriesTable.id, id))
     .returning();
 
-  res.status(200).json(
-    new ApiResponse(200, updatedCategory, 'Category updated successfully')
-  );
+  res.status(200).json(new ApiResponse(200, updatedCategory, 'Category updated successfully'));
 });
 
 /* =========================
@@ -375,7 +365,10 @@ export const deleteCategory = asyncHandler(async (req, res) => {
     .where(eq(categoriesTable.parentId, id));
 
   if (childCategories.length > 0 && force !== 'true') {
-    throw new ApiError(400, 'Cannot delete category with child categories. Use force=true to delete all child categories.');
+    throw new ApiError(
+      400,
+      'Cannot delete category with child categories. Use force=true to delete all child categories.'
+    );
   }
 
   // If force delete, recursively delete all child categories
@@ -398,13 +391,9 @@ export const deleteCategory = asyncHandler(async (req, res) => {
   // }
 
   // Delete the category
-  await db
-    .delete(categoriesTable)
-    .where(eq(categoriesTable.id, id));
+  await db.delete(categoriesTable).where(eq(categoriesTable.id, id));
 
-  res.status(200).json(
-    new ApiResponse(200, null, 'Category deleted successfully')
-  );
+  res.status(200).json(new ApiResponse(200, null, 'Category deleted successfully'));
 });
 
 /* =========================
@@ -418,24 +407,26 @@ export const getCategoryTree = asyncHandler(async (req, res) => {
   const allCategories = await db.select().from(categoriesTable);
 
   // Build tree structure with optional depth limit
-  const buildTreeWithDepth = (categories: any[], parentId: string | null = null, currentDepth: number = 0): any[] => {
+  const buildTreeWithDepth = (
+    categories: any[],
+    parentId: string | null = null,
+    currentDepth: number = 0
+  ): any[] => {
     if (depth !== undefined && currentDepth >= depth) {
       return [];
     }
 
     return categories
-      .filter(category => category.parentId === parentId)
-      .map(category => ({
+      .filter((category) => category.parentId === parentId)
+      .map((category) => ({
         ...category,
-        children: buildTreeWithDepth(categories, category.id, currentDepth + 1)
+        children: buildTreeWithDepth(categories, category.id, currentDepth + 1),
       }));
   };
 
   const categoryTree = buildTreeWithDepth(allCategories);
 
-  res.status(200).json(
-    new ApiResponse(200, categoryTree, 'Category tree retrieved successfully')
-  );
+  res.status(200).json(new ApiResponse(200, categoryTree, 'Category tree retrieved successfully'));
 });
 
 /* =========================
@@ -447,9 +438,9 @@ export const getRootCategories = asyncHandler(async (req, res) => {
     .from(categoriesTable)
     .where(isNull(categoriesTable.parentId));
 
-  res.status(200).json(
-    new ApiResponse(200, rootCategories, 'Root categories retrieved successfully')
-  );
+  res
+    .status(200)
+    .json(new ApiResponse(200, rootCategories, 'Root categories retrieved successfully'));
 });
 
 /* =========================
@@ -509,7 +500,5 @@ export const moveCategory = asyncHandler(async (req, res) => {
     .where(eq(categoriesTable.id, id))
     .returning();
 
-  res.status(200).json(
-    new ApiResponse(200, updatedCategory, 'Category moved successfully')
-  );
+  res.status(200).json(new ApiResponse(200, updatedCategory, 'Category moved successfully'));
 });
