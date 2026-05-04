@@ -90,27 +90,27 @@ export const getPaginatedProducts = asyncHandler(async (req, res) => {
 
   // Build query
   // let query = db.select().from(productsTable);
-let query = db
-  .select({
-    id: productsTable.id,
-    name: productsTable.name,
-    slug: productsTable.slug,
-    sku: productsTable.sku,
-    description: productsTable.description,
-    price: productsTable.price,
-    brandId: productsTable.brandId,
-    skinType: productsTable.skinType,
-    rating: productsTable.rating,
-    reviewCount: productsTable.reviewCount,
-    createdAt: productsTable.createdAt,
-    updatedAt: productsTable.updatedAt,
-    stock: inventoryTable.stock,
-    images: productImagesTable.urls,
-    compareAtPrice: productsTable.compareAtPrice,
-  })
-  .from(productsTable)
-  .leftJoin(inventoryTable, eq(productsTable.id, inventoryTable.productId))
-  .leftJoin(productImagesTable, eq(productsTable.id, productImagesTable.productId))
+  let query = db
+    .select({
+      id: productsTable.id,
+      name: productsTable.name,
+      slug: productsTable.slug,
+      sku: productsTable.sku,
+      description: productsTable.description,
+      price: productsTable.price,
+      brandId: productsTable.brandId,
+      skinType: productsTable.skinType,
+      rating: productsTable.rating,
+      reviewCount: productsTable.reviewCount,
+      createdAt: productsTable.createdAt,
+      updatedAt: productsTable.updatedAt,
+      stock: inventoryTable.stock,
+      images: productImagesTable.urls,
+      compareAtPrice: productsTable.compareAtPrice,
+    })
+    .from(productsTable)
+    .leftJoin(inventoryTable, eq(productsTable.id, inventoryTable.productId))
+    .leftJoin(productImagesTable, eq(productsTable.id, productImagesTable.productId));
 
   if (whereConditions.length > 0) {
     query = query.where(and(...whereConditions)) as any;
@@ -142,9 +142,7 @@ let query = db
   query = query.orderBy(sortOrder === 'asc' ? asc(sortColumn) : desc(sortColumn)) as any;
 
   // Get total count
-  const countQuery = db
-    .select({ count: sql<number>`count(*)` })
-    .from(productsTable);
+  const countQuery = db.select({ count: sql<number>`count(*)` }).from(productsTable);
 
   if (whereConditions.length > 0) {
     countQuery.where(and(...whereConditions));
@@ -195,11 +193,7 @@ export const getProductById = asyncHandler(async (req, res) => {
   }
 
   // Get product
-  const [product] = await db
-    .select()
-    .from(productsTable)
-    .where(eq(productsTable.id, id))
-    .limit(1);
+  const [product] = await db.select().from(productsTable).where(eq(productsTable.id, id)).limit(1);
 
   if (!product) {
     throw new ApiError(404, 'Product not found');
@@ -610,10 +604,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       .limit(1);
 
     if (existingInventory) {
-      await db
-        .update(inventoryTable)
-        .set({ stock: stock })
-        .where(eq(inventoryTable.productId, id));
+      await db.update(inventoryTable).set({ stock: stock }).where(eq(inventoryTable.productId, id));
     } else {
       await db.insert(inventoryTable).values({
         productId: id,
@@ -682,11 +673,7 @@ export const updateProductInventory = asyncHandler(async (req, res) => {
   const { stock } = updateInventorySchema.parse(req.body);
 
   // Check if product exists
-  const [product] = await db
-    .select()
-    .from(productsTable)
-    .where(eq(productsTable.id, id))
-    .limit(1);
+  const [product] = await db.select().from(productsTable).where(eq(productsTable.id, id)).limit(1);
 
   if (!product) {
     throw new ApiError(404, 'Product not found');

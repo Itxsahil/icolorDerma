@@ -60,11 +60,7 @@ export const createProductSchema = z.object({
     .default('INR')
     .optional(),
 
-  brandId: z
-    .string()
-    .uuid('Brand ID must be a valid UUID')
-    .optional()
-    .nullable(),
+  brandId: z.string().uuid('Brand ID must be a valid UUID').optional().nullable(),
 
   ingredients: z
     .string()
@@ -88,15 +84,9 @@ export const createProductSchema = z.object({
     .nullable(),
 
   // Related data
-  categoryIds: z
-    .array(z.string().uuid('Category ID must be a valid UUID'))
-    .optional()
-    .default([]),
+  categoryIds: z.array(z.string().uuid('Category ID must be a valid UUID')).optional().default([]),
 
-  tagIds: z
-    .array(z.string().uuid('Tag ID must be a valid UUID'))
-    .optional()
-    .default([]),
+  tagIds: z.array(z.string().uuid('Tag ID must be a valid UUID')).optional().default([]),
 
   images: z
     .array(
@@ -178,16 +168,9 @@ export const updateProductSchema = z.object({
     .optional()
     .nullable(),
 
-  currency: z
-    .string()
-    .max(10, 'Currency code must be less than 10 characters')
-    .optional(),
+  currency: z.string().max(10, 'Currency code must be less than 10 characters').optional(),
 
-  brandId: z
-    .string()
-    .uuid('Brand ID must be a valid UUID')
-    .optional()
-    .nullable(),
+  brandId: z.string().uuid('Brand ID must be a valid UUID').optional().nullable(),
 
   ingredients: z
     .string()
@@ -210,13 +193,9 @@ export const updateProductSchema = z.object({
     .optional()
     .nullable(),
 
-  categoryIds: z
-    .array(z.string().uuid('Category ID must be a valid UUID'))
-    .optional(),
+  categoryIds: z.array(z.string().uuid('Category ID must be a valid UUID')).optional(),
 
-  tagIds: z
-    .array(z.string().uuid('Tag ID must be a valid UUID'))
-    .optional(),
+  tagIds: z.array(z.string().uuid('Tag ID must be a valid UUID')).optional(),
 
   images: z
     .array(
