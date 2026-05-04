@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import authRouter from '@routes/auth.routes';
 import brandRouter from '@routes/brand.routes';
 import categoriesRouter from '@routes/categories.routes';
+import productsRouter from "@routes/product.routes";
 import { ApiError } from '@/utils/ApiError';
 
 const app = express();
@@ -24,6 +25,7 @@ app.get('/', (_req, res) => {
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/brands', brandRouter);
 app.use('/api/v1/categories', categoriesRouter);
+app.use('/api/v1/products', productsRouter)
 
 // Global error handler
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {

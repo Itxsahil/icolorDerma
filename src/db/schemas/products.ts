@@ -7,6 +7,7 @@ import {
   index,
   integer,
   primaryKey,
+  json,
 } from 'drizzle-orm/pg-core';
 
 //!  PRODUCTS
@@ -71,7 +72,7 @@ export const productImagesTable = pgTable('product_images', {
     .notNull()
     .references(() => productsTable.id),
 
-  url: text('url').notNull(),
+  urls: json('urls').$type<{ image: string; position: number }[]>().notNull().default([]),
   position: integer('position').default(0),
 });
 
