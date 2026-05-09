@@ -6,6 +6,8 @@ import brandRouter from '@routes/brand.routes';
 import categoriesRouter from '@routes/categories.routes';
 import productsRouter from '@routes/product.routes';
 import cartRouter from '@routes/cart.routes';
+// import checkoutRouter from '@routes/checkout.routes';
+import addressRouter from '@routes/address.routes';
 import { ApiError } from '@/utils/ApiError';
 
 const app = express();
@@ -28,6 +30,8 @@ app.use('/api/v1/brands', brandRouter);
 app.use('/api/v1/categories', categoriesRouter);
 app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/cart', cartRouter);
+// app.use('/api/v1/checkout', checkoutRouter);
+app.use('/api/v1/addresses', addressRouter);
 
 // Global error handler
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
