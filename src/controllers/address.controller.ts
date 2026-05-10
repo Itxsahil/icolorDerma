@@ -68,6 +68,32 @@ export const createAddress = asyncHandler(async (req, res) => {
   if (!fullName || !phone || !line1 || !city || !state || !postalCode) {
     throw new ApiError(400, 'Missing required address fields');
   }
+  if (isDefault) {
+    const [c] = await db.transaction(async (tx) => {
+      // unset all the default address
+      await tx
+        .update(addressesTable)
+        .set({ isDefault: false })
+        .where(eq(addressesTable.userId, userId));
+
+      return await tx
+        .insert(addressesTable)
+        .values({
+          userId,
+          fullName,
+          phone,
+          line1,
+          line2,
+          city,
+          state,
+          postalCode,
+          country,
+          isDefault: isDefault ?? false,
+        })
+        .returning();
+    });
+    res.status(201).json(new ApiResponse(201, c, 'Address created successfully'));
+  }
 
   const [createdAddress] = await db
     .insert(addressesTable)
