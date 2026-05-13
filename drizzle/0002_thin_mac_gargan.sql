@@ -1,1 +1,0 @@
-ALTER TABLE "product_images" RENAME COLUMN "url" TO "urls";
